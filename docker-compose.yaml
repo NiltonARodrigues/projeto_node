@@ -1,0 +1,45 @@
+version: '3.7'
+
+services:
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    restart: always
+    ports: 
+      - '8080:80'
+    links:
+      - node
+    networks:
+      - fullcycle_net
+  
+  node:
+    build: ./node
+    container_name: node
+    restart: always
+    ports:
+      - '3000:3000'
+    links:
+      - db
+    networks:
+      - fullcycle_net
+
+  db:
+    build:
+      context: ./mysql
+    # aqui executamos um comando logo após o entrypoint padrão 
+    container_name: db
+    restart: always
+    tty: true
+    # volumes:
+    #   - ./mysql:/var/lib/mysql 
+
+    environment:
+      - MYSQL_DATABASE=nodedb
+      # senha do root 
+      - MYSQL_ROOT_PASSWORD=senha@root
+    networks:
+      - fullcycle_net
+  
+networks:
+  fullcycle_net:
+    driver: bridge
